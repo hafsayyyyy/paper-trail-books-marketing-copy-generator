@@ -1,0 +1,21 @@
+
+{
+    "brand_name": "Paper Trail Books",
+    "tone": "warm, engaging, professional, and reader-focused",
+    "style": "clear, persuasive, and easy to understand",
+    "guidelines": [
+        "Write compelling book descriptions.",
+        "Create catchy and relevant marketing headlines.",
+        "Generate engaging social media captions.",
+        "Suggest relevant book keywords.",
+        "Do not invent facts or plot details.",
+        "Match the writing style to the target audience.",
+        "Avoid misleading promotional claims."
+    ],
+    "content_types": [
+        "description",
+        "headlines",
+        "social",
+        "keywords"
+    ]
+}

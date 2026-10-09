@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Trail Books - Marketing Copy Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f1eb;
+            color: #292929;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: #654321;
+        }
+
+        form, .result, .error {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 3px 10px #00000010;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: #654321;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4a3018;
+        }
+
+        .result {
+            white-space: pre-wrap;
+            line-height: 1.7;
+        }
+
+        .error {
+            color: #a00000;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Paper Trail Books</h1>
+        <p>AI-Powered Book Marketing Copy Generator</p>
+        <p>Create engaging descriptions and promotional content for your book.</p>
+    </header>
+
+    <form method="POST" action="/">
+        <label for="title">Book Title</label>
+        <input type="text" id="title" name="title"
+               placeholder="Enter your book title" required>
+
+        <label for="author">Author Name</label>
+        <input type="text" id="author" name="author"
+               placeholder="Enter author name" required>
+
+        <label for="genre">Book Genre</label>
+        <select id="genre" name="genre" required>
+            <option value="">Select a genre</option>
+            <option>Fiction</option>
+            <option>Fantasy</option>
+            <option>Mystery</option>
+            <option>Romance</option>
+            <option>Science Fiction</option>
+            <option>Thriller</option>
+            <option>Biography</option>
+            <option>Self-Help</option>
+            <option>Non-Fiction</option>
+            <option>Other</option>
+        </select>
+
+        <label for="description">Book Description</label>
+        <textarea id="description" name="description" rows="5"
+                  placeholder="Describe your book and its main themes"
+                  required></textarea>
+
+        <label for="audience">Target Audience</label>
+        <input type="text" id="audience" name="audience"
+               placeholder="e.g. Young adults, professionals, parents"
+               required>
+
+        <button type="submit">Generate Marketing Copy</button>
+    </form>
+
+    {% if error %}
+        <div class="error">
+            <h3>Something went wrong</h3>
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+
+    {% if result %}
+        <section class="result">
+            <h2>Generated Marketing Copy</h2>
+            {{ result }}
+        </section>
+    {% endif %}
+
+    <footer>
+        <p>Paper Trail Books | AI Book Marketing Assistant</p>
+    </footer>
+</body>
+</html>
