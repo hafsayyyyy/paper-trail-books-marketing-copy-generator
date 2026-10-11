@@ -1,4 +1,6 @@
 
+import os
+
 from flask import Flask, jsonify, render_template, request
 from src.generator import generate_marketing_copy
 
@@ -21,8 +23,27 @@ COPY_TYPES = [
 ]
 
 
+def validate_book_details(data):
+    """Validate the required book information."""
+
+    if not isinstance(data, dict):
+        return ["A valid JSON object is required."]
+
+    invalid_fields = []
+
+    for field in REQUIRED_FIELDS:
+        value = data.get(field)
+
+        if not isinstance(value, str) or not value.strip():
+            invalid_fields.append(field)
+
+    return invalid_fields
+
+
 @app.route("/", methods=["GET", "POST"])
 def index():
+    """Display the web form and generate marketing copy."""
+
     result = None
     error = None
 
@@ -34,7 +55,9 @@ def index():
 
         copy_type = request.form.get("copy_type", "all")
 
-        if not all(details.values()):
+        invalid_fields = validate_book_details(details)
+
+        if invalid_fields:
             error = "Please fill in all required fields."
 
         elif copy_type not in COPY_TYPES:
@@ -46,6 +69,7 @@ def index():
                     **details,
                     copy_type=copy_type,
                 )
+
             except ValueError as exc:
                 if "OPENAI_API_KEY is missing" in str(exc):
                     error = (
@@ -60,6 +84,7 @@ def index():
                         "Unable to generate marketing copy. "
                         "Check your API configuration and available credits."
                     )
+
             except Exception:
                 app.logger.exception(
                     "Marketing copy generation failed."
@@ -78,6 +103,8 @@ def index():
 
 @app.route("/generate", methods=["POST"])
 def generate():
+    """Generate marketing copy through the JSON API."""
+
     if not request.is_json:
         return jsonify({
             "success": False,
@@ -92,12 +119,7 @@ def generate():
             "error": "A valid JSON object is required.",
         }), 400
 
-    invalid_fields = [
-        field
-        for field in REQUIRED_FIELDS
-        if not isinstance(data.get(field), str)
-        or not data[field].strip()
-    ]
+    invalid_fields = validate_book_details(data)
 
     if invalid_fields:
         return jsonify({
@@ -139,7 +161,9 @@ def generate():
                 "error": str(exc),
             }), 503
 
-        app.logger.exception("Marketing copy configuration error.")
+        app.logger.exception(
+            "Marketing copy configuration error."
+        )
 
         return jsonify({
             "success": False,
@@ -147,13 +171,23 @@ def generate():
         }), 500
 
     except Exception:
-        app.logger.exception("Marketing copy generation failed.")
+        app.logger.exception(
+            "Marketing copy generation failed."
+        )
 
         return jsonify({
             "success": False,
-            "error": "Marketing copy generation failed. Please try again.",
+            "error": (
+                "Marketing copy generation failed. Please try again."
+            ),
         }), 502
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False,
+    )
