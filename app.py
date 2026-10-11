@@ -2,6 +2,8 @@
 import os
 
 from flask import Flask, jsonify, render_template, request
+from werkzeug.exceptions import HTTPException
+
 from src.generator import generate_marketing_copy
 
 app = Flask(__name__)
@@ -52,46 +54,24 @@ def index():
             field: request.form.get(field, "").strip()
             for field in REQUIRED_FIELDS
         }
-
         copy_type = request.form.get("copy_type", "all")
-
         invalid_fields = validate_book_details(details)
 
         if invalid_fields:
             error = "Please fill in all required fields."
-
         elif copy_type not in COPY_TYPES:
             error = "Please select a valid marketing content type."
-
         else:
             try:
                 result = generate_marketing_copy(
                     **details,
                     copy_type=copy_type,
                 )
-
-            except ValueError as exc:
-                if "OPENAI_API_KEY is missing" in str(exc):
-                    error = (
-                        "OpenAI API key is missing. "
-                        "Please configure your API key."
-                    )
-                else:
-                    app.logger.exception(
-                        "Marketing copy generation failed."
-                    )
-                    error = (
-                        "Unable to generate marketing copy. "
-                        "Check your API configuration and available credits."
-                    )
-
             except Exception:
-                app.logger.exception(
-                    "Marketing copy generation failed."
-                )
+                app.logger.exception("Marketing copy generation failed.")
                 error = (
                     "Unable to generate marketing copy. "
-                    "Check your API configuration and available credits."
+                    "Please check the brand voice configuration."
                 )
 
     return render_template(
@@ -151,43 +131,53 @@ def generate():
         return jsonify({
             "success": True,
             "copy_type": copy_type,
+            "copy": result,
             "marketing_copy": result,
         }), 200
 
-    except ValueError as exc:
-        if "OPENAI_API_KEY is missing" in str(exc):
-            return jsonify({
-                "success": False,
-                "error": str(exc),
-            }), 503
-
-        app.logger.exception(
-            "Marketing copy configuration error."
-        )
-
+    except ValueError:
+        app.logger.exception("Marketing copy validation or configuration error.")
         return jsonify({
             "success": False,
-            "error": "Marketing copy configuration is invalid.",
-        }), 500
+            "error": "Unable to generate copy due to invalid input or configuration.",
+        }), 400
 
     except Exception:
-        app.logger.exception(
-            "Marketing copy generation failed."
-        )
-
+        app.logger.exception("Marketing copy generation failed.")
         return jsonify({
             "success": False,
-            "error": (
-                "Marketing copy generation failed. Please try again."
-            ),
-        }), 502
+            "error": "Marketing copy generation failed. Please try again.",
+        }), 500
+
+
+@app.errorhandler(HTTPException)
+def handle_http_error(error):
+    """Return JSON errors for API requests."""
+
+    if request.path == "/generate":
+        return jsonify({
+            "success": False,
+            "error": error.description,
+        }), error.code
+
+    return error
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(error):
+    """Return a JSON response for unexpected API failures."""
+
+    app.logger.exception("Unexpected application error.")
+
+    if request.path == "/generate":
+        return jsonify({
+            "success": False,
+            "error": "An unexpected server error occurred.",
+        }), 500
+
+    return "An unexpected server error occurred.", 500
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=False,
-    )
+    app.run(host="0.0.0.0", port=port, debug=False)
