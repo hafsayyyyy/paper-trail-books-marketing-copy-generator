@@ -5,10 +5,20 @@ from src.generator import generate_marketing_copy
 app = Flask(__name__)
 
 REQUIRED_FIELDS = [
-    "title", "author", "genre", "description", "audience"
+    "title",
+    "author",
+    "genre",
+    "description",
+    "audience",
 ]
 
-COPY_TYPES = ["all", "description", "headlines", "social", "keywords"]
+COPY_TYPES = [
+    "all",
+    "description",
+    "headlines",
+    "social",
+    "keywords",
+]
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -22,16 +32,48 @@ def index():
             for field in REQUIRED_FIELDS
         }
 
+        copy_type = request.form.get("copy_type", "all")
+
         if not all(details.values()):
-            error = "Please fill in all fields."
+            error = "Please fill in all required fields."
+
+        elif copy_type not in COPY_TYPES:
+            error = "Please select a valid marketing content type."
+
         else:
             try:
-                result = generate_marketing_copy(**details)
+                result = generate_marketing_copy(
+                    **details,
+                    copy_type=copy_type,
+                )
+            except ValueError as exc:
+                if "OPENAI_API_KEY is missing" in str(exc):
+                    error = (
+                        "OpenAI API key is missing. "
+                        "Please configure your API key."
+                    )
+                else:
+                    app.logger.exception(
+                        "Marketing copy generation failed."
+                    )
+                    error = (
+                        "Unable to generate marketing copy. "
+                        "Check your API configuration and available credits."
+                    )
             except Exception:
-                app.logger.exception("Marketing copy generation failed.")
-                error = "Unable to generate marketing copy. Check API configuration."
+                app.logger.exception(
+                    "Marketing copy generation failed."
+                )
+                error = (
+                    "Unable to generate marketing copy. "
+                    "Check your API configuration and available credits."
+                )
 
-    return render_template("index.html", result=result, error=error)
+    return render_template(
+        "index.html",
+        result=result,
+        error=error,
+    )
 
 
 @app.route("/generate", methods=["POST"])
@@ -39,7 +81,7 @@ def generate():
     if not request.is_json:
         return jsonify({
             "success": False,
-            "error": "Content-Type must be application/json."
+            "error": "Content-Type must be application/json.",
         }), 415
 
     data = request.get_json(silent=True)
@@ -47,19 +89,21 @@ def generate():
     if not isinstance(data, dict):
         return jsonify({
             "success": False,
-            "error": "A valid JSON object is required."
+            "error": "A valid JSON object is required.",
         }), 400
 
     invalid_fields = [
-        field for field in REQUIRED_FIELDS
-        if not isinstance(data.get(field), str) or not data[field].strip()
+        field
+        for field in REQUIRED_FIELDS
+        if not isinstance(data.get(field), str)
+        or not data[field].strip()
     ]
 
     if invalid_fields:
         return jsonify({
             "success": False,
             "error": "Required fields are missing or invalid.",
-            "fields": invalid_fields
+            "fields": invalid_fields,
         }), 400
 
     copy_type = data.get("copy_type", "all")
@@ -68,7 +112,7 @@ def generate():
         return jsonify({
             "success": False,
             "error": "Invalid copy_type.",
-            "allowed_types": COPY_TYPES
+            "allowed_types": COPY_TYPES,
         }), 400
 
     details = {
@@ -79,33 +123,35 @@ def generate():
     try:
         result = generate_marketing_copy(
             **details,
-            copy_type=copy_type
+            copy_type=copy_type,
         )
 
         return jsonify({
             "success": True,
             "copy_type": copy_type,
-            "marketing_copy": result
+            "marketing_copy": result,
         }), 200
 
     except ValueError as exc:
         if "OPENAI_API_KEY is missing" in str(exc):
             return jsonify({
                 "success": False,
-                "error": str(exc)
+                "error": str(exc),
             }), 503
 
-        app.logger.exception("Configuration error.")
+        app.logger.exception("Marketing copy configuration error.")
+
         return jsonify({
             "success": False,
-            "error": "Marketing copy configuration is invalid."
+            "error": "Marketing copy configuration is invalid.",
         }), 500
 
     except Exception:
         app.logger.exception("Marketing copy generation failed.")
+
         return jsonify({
             "success": False,
-            "error": "Marketing copy generation failed. Please try again."
+            "error": "Marketing copy generation failed. Please try again.",
         }), 502
 
 

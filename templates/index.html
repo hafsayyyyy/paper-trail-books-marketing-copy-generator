@@ -4,146 +4,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paper Trail Books - Marketing Copy Generator</title>
+
+    <title>Paper Trail Books | Marketing Copy Generator</title>
+
     <style>
+        :root {
+            --primary: #4936a8;
+            --primary-dark: #35257f;
+            --background: #f5f6fc;
+            --card: #ffffff;
+            --text: #20233a;
+            --muted: #676b80;
+            --border: #dedff0;
+            --success: #176b45;
+            --danger: #a12635;
+        }
+
         * {
             box-sizing: border-box;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f1eb;
-            color: #292929;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
         }
 
         header {
+            background: linear-gradient(135deg, #35257f, #7255d8);
+            color: white;
+            padding: 38px 20px;
             text-align: center;
-            margin-bottom: 25px;
         }
 
-        h1 {
-            color: #654321;
+        header h1 {
+            margin: 0 0 10px;
+            font-size: clamp(26px, 4vw, 38px);
         }
 
-        form, .result, .error {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 20px;
-            box-shadow: 0 3px 10px #00000010;
+        header p {
+            margin: 0;
+            color: #eeeaff;
+        }
+
+        main {
+            width: min(920px, 92%);
+            margin: 32px auto;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 28px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(35, 28, 90, 0.06);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+
+        .intro {
+            color: var(--muted);
+            margin-top: -6px;
+            margin-bottom: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
         }
 
         label {
-            display: block;
             font-weight: bold;
-            margin-top: 12px;
+            font-size: 14px;
         }
 
-        input, textarea, select {
+        input,
+        select,
+        textarea {
             width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
+            padding: 12px 13px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font: inherit;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 2px solid #b5a8ff;
+            border-color: var(--primary);
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
         }
 
         button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 20px;
-            background: #654321;
-            color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
+            border-radius: 8px;
+            padding: 12px 18px;
+            font: inherit;
+            font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
-        button:hover {
-            background: #4a3018;
+        .primary-button {
+            width: 100%;
+            margin-top: 24px;
+            background: var(--primary);
+            color: white;
         }
 
-        .result {
-            white-space: pre-wrap;
-            line-height: 1.7;
+        .primary-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .secondary-button {
+            background: #ece9ff;
+            color: var(--primary-dark);
+        }
+
+        .secondary-button:hover {
+            background: #ddd6ff;
         }
 
         .error {
-            color: #a00000;
+            padding: 14px 16px;
+            margin-bottom: 22px;
+            color: var(--danger);
+            background: #fff0f1;
+            border: 1px solid #f3c6cb;
+            border-radius: 8px;
+        }
+
+        .result-box {
+            background: #fbfaff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .result-content {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .result-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .empty-note {
+            color: var(--muted);
+            font-size: 14px;
         }
 
         footer {
+            padding: 22px;
             text-align: center;
-            margin-top: 30px;
-            color: #666;
+            color: var(--muted);
             font-size: 13px;
+        }
+
+        @media (max-width: 620px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            header {
+                padding: 30px 16px;
+            }
+        }
+
+        @media print {
+            header,
+            .form-card,
+            footer,
+            .result-actions {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            main {
+                width: 100%;
+                margin: 0;
+            }
+
+            .card {
+                border: none;
+                box-shadow: none;
+            }
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>Paper Trail Books</h1>
         <p>AI-Powered Book Marketing Copy Generator</p>
-        <p>Create engaging descriptions and promotional content for your book.</p>
     </header>
 
-    <form method="POST" action="/">
-        <label for="title">Book Title</label>
-        <input type="text" id="title" name="title"
-               placeholder="Enter your book title" required>
+    <main>
+        <section class="card form-card">
+            <h2>Create Your Marketing Copy</h2>
 
-        <label for="author">Author Name</label>
-        <input type="text" id="author" name="author"
-               placeholder="Enter author name" required>
+            <p class="intro">
+                Enter your book details and generate marketing content
+                tailored to your readers.
+            </p>
 
-        <label for="genre">Book Genre</label>
-        <select id="genre" name="genre" required>
-            <option value="">Select a genre</option>
-            <option>Fiction</option>
-            <option>Fantasy</option>
-            <option>Mystery</option>
-            <option>Romance</option>
-            <option>Science Fiction</option>
-            <option>Thriller</option>
-            <option>Biography</option>
-            <option>Self-Help</option>
-            <option>Non-Fiction</option>
-            <option>Other</option>
-        </select>
+            {% if error %}
+                <div class="error" role="alert">
+                    <strong>Something went wrong:</strong>
+                    {{ error }}
+                </div>
+            {% endif %}
 
-        <label for="description">Book Description</label>
-        <textarea id="description" name="description" rows="5"
-                  placeholder="Describe your book and its main themes"
-                  required></textarea>
+            <form method="POST" action="/">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="title">Book Title *</label>
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            placeholder="e.g. The Hidden Garden"
+                            value="{{ request.form.get('title', '') }}"
+                            required
+                        >
+                    </div>
 
-        <label for="audience">Target Audience</label>
-        <input type="text" id="audience" name="audience"
-               placeholder="e.g. Young adults, professionals, parents"
-               required>
+                    <div class="field">
+                        <label for="author">Author Name *</label>
+                        <input
+                            type="text"
+                            id="author"
+                            name="author"
+                            placeholder="Enter author name"
+                            value="{{ request.form.get('author', '') }}"
+                            required
+                        >
+                    </div>
 
-        <button type="submit">Generate Marketing Copy</button>
-    </form>
+                    <div class="field">
+                        <label for="genre">Book Genre *</label>
+                        <select id="genre" name="genre" required>
+                            <option value="">Select a genre</option>
 
-    {% if error %}
-        <div class="error">
-            <h3>Something went wrong</h3>
-            <p>{{ error }}</p>
-        </div>
-    {% endif %}
+                            {% for genre_option in [
+                                'Fiction',
+                                'Fantasy',
+                                'Mystery',
+                                'Romance',
+                                'Science Fiction',
+                                'Thriller',
+                                'Biography',
+                                'Self-Help',
+                                'Non-Fiction',
+                                'Other'
+                            ] %}
+                                <option
+                                    value="{{ genre_option }}"
+                                    {% if request.form.get('genre') == genre_option %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ genre_option }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-    {% if result %}
-        <section class="result">
-            <h2>Generated Marketing Copy</h2>
-            {{ result }}
+                    <div class="field">
+                        <label for="audience">Target Audience *</label>
+                        <input
+                            type="text"
+                            id="audience"
+                            name="audience"
+                            placeholder="e.g. Young adults"
+                            value="{{ request.form.get('audience', '') }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="field full-width">
+                        <label for="description">Book Description *</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            placeholder="Describe the story, main themes, characters, or key benefits..."
+                            required
+                        >{{ request.form.get('description', '') }}</textarea>
+                        <span class="hint">
+                            Include useful details so the generated copy
+                            can represent your book accurately.
+                        </span>
+                    </div>
+
+                    <div class="field full-width">
+                        <label for="copy_type">Marketing Content Type *</label>
+                        <select id="copy_type" name="copy_type" required>
+                            <option
+                                value="all"
+                                {% if request.form.get('copy_type', 'all') == 'all' %}
+                                    selected
+                                {% endif %}
+                            >
+                                All Marketing Content
+                            </option>
+
+                            <option
+                                value="description"
+                                {% if request.form.get('copy_type') == 'description' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Book Description
+                            </option>
+
+                            <option
+                                value="headlines"
+                                {% if request.form.get('copy_type') == 'headlines' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Marketing Headlines
+                            </option>
+
+                            <option
+                                value="social"
+                                {% if request.form.get('copy_type') == 'social' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Social Media Posts
+                            </option>
+
+                            <option
+                                value="keywords"
+                                {% if request.form.get('copy_type') == 'keywords' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Marketing Keywords
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="primary-button" type="submit">
+                    Generate Marketing Copy
+                </button>
+            </form>
         </section>
-    {% endif %}
+
+        {% if result %}
+            <section class="card" id="result-section">
+                <h2>Your Generated Marketing Copy</h2>
+
+                <p class="intro">
+                    Review your content below. You can copy it or print it.
+                </p>
+
+                <div class="result-box">
+                    <div class="result-content" id="result-content">{{ result }}</div>
+                </div>
+
+                <div class="result-actions">
+                    <button
+                        class="secondary-button"
+                        type="button"
+                        onclick="copyResult()"
+                    >
+                        Copy to Clipboard
+                    </button>
+
+                    <button
+                        class="secondary-button"
+                        type="button"
+                        onclick="window.print()"
+                    >
+                        Print Results
+                    </button>
+                </div>
+
+                <p class="empty-note" id="copy-status" aria-live="polite"></p>
+            </section>
+        {% endif %}
+    </main>
 
     <footer>
-        <p>Paper Trail Books | AI Book Marketing Assistant</p>
+        Paper Trail Books Marketing Copy Generator
     </footer>
+
+    <script>
+        async function copyResult() {
+            const resultElement = document.getElementById("result-content");
+            const statusElement = document.getElementById("copy-status");
+
+            if (!resultElement || !statusElement) {
+                return;
+            }
+
+            const text = resultElement.innerText;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                statusElement.textContent = "Marketing copy copied successfully.";
+            } catch (error) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0";
+
+                document.body.appendChild(textArea);
+                textArea.select();
+
+                const copied = document.execCommand("copy");
+                textArea.remove();
+
+                statusElement.textContent = copied
+                    ? "Marketing copy copied successfully."
+                    : "Copy failed. Please select and copy the text manually.";
+            }
+        }
+    </script>
 </body>
 </html>
