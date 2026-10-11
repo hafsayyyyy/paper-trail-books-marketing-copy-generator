@@ -1,36 +1,5 @@
-import os
-from openai import OpenAI
 
-
-COPY_TYPE_INSTRUCTIONS = {
-    "all": """
-        Generate all of the following:
-        1. An engaging book description
-        2. Three marketing headlines
-        3. Five promotional social media captions
-        4. Seven relevant marketing keywords
-    """,
-    "description": """
-        Generate only one engaging book description suitable for
-        a book listing. Do not include headlines, social media posts,
-        or keywords.
-    """,
-    "headlines": """
-        Generate only five catchy marketing headlines for the book.
-        Do not include the book description, social media posts,
-        or keywords.
-    """,
-    "social": """
-        Generate only five promotional social media posts.
-        Make them engaging and suitable for the target audience.
-        Do not include the book description, headlines, or keywords.
-    """,
-    "keywords": """
-        Generate only seven relevant marketing keywords or short
-        keyword phrases for book discovery and search.
-        Do not include the book description, headlines, or social posts.
-    """,
-}
+import re
 
 
 def generate_marketing_copy(
@@ -41,55 +10,92 @@ def generate_marketing_copy(
     audience,
     copy_type="all",
 ):
-    """Generate book marketing content using the OpenAI API."""
+    """Generate marketing copy without a paid API."""
 
-    api_key = os.getenv("OPENAI_API_KEY")
+    title = title.strip()
+    author = author.strip()
+    genre = genre.strip()
+    description = description.strip()
+    audience = audience.strip()
 
-    if not api_key:
-        raise ValueError(
-            "OPENAI_API_KEY is missing. Please configure your API key."
-        )
+    if not all([title, author, genre, description, audience]):
+        raise ValueError("All book details are required.")
 
-    if copy_type not in COPY_TYPE_INSTRUCTIONS:
-        raise ValueError(
-            f"Invalid copy_type: {copy_type}. "
-            f"Choose from {', '.join(COPY_TYPE_INSTRUCTIONS)}."
-        )
+    if copy_type not in [
+        "all",
+        "description",
+        "headlines",
+        "social",
+        "keywords",
+    ]:
+        raise ValueError("Invalid marketing content type.")
 
-    client = OpenAI(api_key=api_key)
+    short_description = re.sub(r"\s+", " ", description).strip()
+    short_description = short_description.rstrip(".!?")
 
-    prompt = f"""
-Create marketing content for a book using these details.
-
-Book title: {title}
-Author: {author}
-Genre: {genre}
-Book description: {description}
-Target audience: {audience}
-
-Content to generate:
-{COPY_TYPE_INSTRUCTIONS[copy_type]}
-
-Keep the writing engaging, accurate, and suitable for the target
-audience. Do not invent plot details that are not provided.
-Use clear headings and readable formatting.
-"""
-
-    response = client.chat.completions.create(
-        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a professional book marketing copywriter."
-                ),
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ],
-        temperature=0.7,
+    book_description = (
+        f"Discover {title} by {author}, a {genre.lower()} book "
+        f"created for {audience}. {short_description}. "
+        f"Explore a story shaped by its unique ideas, themes, "
+        f"and experiences. Add {title} to your reading list "
+        f"and discover what makes this book worth exploring."
     )
 
-    return response.choices[0].message.content
+    headlines = [
+        f"Discover {title}: A Book to Remember",
+        f"Your Next {genre} Read: {title}",
+        f"Explore the World of {title} by {author}",
+        f"A New Reading Journey Begins with {title}",
+        f"Is {title} Your Next Favourite Book?",
+    ]
+
+    social_posts = [
+        f"Looking for your next read? Discover {title} by {author}! "
+        f"A {genre.lower()} book for {audience}. #BookLovers #Reading",
+        f"Your next reading adventure starts with {title}. "
+        f"Find your next favourite book! #BookRecommendation",
+        f"Readers, meet {title} by {author}. "
+        f"Add this {genre.lower()} title to your reading list. #MustRead",
+        f"Every book offers something new to discover. "
+        f"Explore {title} and share your thoughts! #BookCommunity",
+        f"Searching for a book to explore? Check out {title} "
+        f"by {author}. #ReadersCorner #Books",
+    ]
+
+    keywords = [
+        title,
+        author,
+        genre,
+        f"{genre} books",
+        f"books for {audience}",
+        "book recommendations",
+        "reading list",
+    ]
+
+    content = {
+        "description": (
+            "BOOK DESCRIPTION\n\n" + book_description
+        ),
+        "headlines": (
+            "MARKETING HEADLINES\n\n"
+            + "\n".join(
+                f"{i}. {headline}"
+                for i, headline in enumerate(headlines, 1)
+            )
+        ),
+        "social": (
+            "SOCIAL MEDIA POSTS\n\n"
+            + "\n\n".join(
+                f"{i}. {post}"
+                for i, post in enumerate(social_posts, 1)
+            )
+        ),
+        "keywords": (
+            "MARKETING KEYWORDS\n\n" + ", ".join(keywords)
+        ),
+    }
+
+    if copy_type == "all":
+        return "\n\n".join(content[key] for key in content)
+
+    return content[copy_type]
