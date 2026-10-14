@@ -1,60 +1,55 @@
+﻿# Paper Trail Books Marketing Copy Generator
 
-# Paper Trail Books Marketing Copy Generator
-
-An AI-powered book marketing copy generator built with Python, Flask, and a Large Language Model (LLM) API. The application helps authors and publishers create marketing content based on book information and configured brand voice guidelines.
+A Flask-based web application that helps authors and publishers create promotional marketing copy for books. Users can enter book details, select a marketing format, generate copy, review the result, and save approved content with a review checklist.
 
 ## 1. Project Overview
 
-The Paper Trail Books Marketing Copy Generator is a Python-based application that automates the creation of promotional content for books.
+The Paper Trail Books Marketing Copy Generator simplifies the process of preparing promotional content for books. It provides a web interface where users can enter book information and generate marketing copy suited to the selected format.
 
-Users provide information such as the book title, author, genre, description, and target audience. The application uses an LLM API to generate marketing content tailored to the selected content type and the project's brand voice configuration.
-
-The project includes an interactive Flask web interface and a JSON-based HTTP API.
+The application includes a Flask web interface, a JSON API, brand voice configuration, input validation, error handling, automated tests, and a local save workflow.
 
 ## 2. Objectives
 
-- Automate book marketing content generation.
-- Integrate an LLM API into a Python application.
-- Maintain a consistent brand voice.
-- Provide a user-friendly web interface.
-- Provide an HTTP API for programmatic access.
-- Validate input data and handle errors.
-- Support automated testing.
-- Document installation, usage, and deployment.
+- Generate promotional content for books.
+- Provide a simple and user-friendly web interface.
+- Maintain consistent brand voice guidelines.
+- Accept book information through a web form and API.
+- Validate user input and handle errors.
+- Allow users to review generated copy before saving.
+- Save marketing copy with its review checklist.
+- Support automated testing and clear documentation.
 
 ## 3. Features
 
-- AI-powered marketing copy generation.
-- Flask web application.
-- JSON API endpoint.
-- Configurable brand voice using `brand_voice.json`.
-- Multiple marketing content types.
-- Required-field validation.
-- JSON request validation.
-- Error handling for configuration and generation failures.
-- Copy-to-clipboard functionality for generated content.
-- Print-friendly results.
-- Environment-variable-based API configuration.
+- Flask-based web application.
+- Book title, author, genre, description, and target audience fields.
+- Multiple marketing content formats.
+- Brand voice configuration through `brand_voice.json`.
+- Input validation and error handling.
+- Editable generated marketing copy.
+- Review checklist before saving.
+- Save workflow for marketing copy and checklist data.
+- Local JSON storage using `saved_copies.json`.
+- JSON API endpoint: `POST /generate`.
 - Automated tests using pytest.
+- Git and GitHub version control.
 
-### Supported Marketing Content Types
+### Marketing Formats
 
-| Type | Description |
-|---|---|
-| `all` | All supported marketing content |
-| `description` | Book marketing description |
-| `headlines` | Promotional headlines |
-| `social` | Social media marketing content |
-| `keywords` | Marketing keywords |
+The web interface provides these marketing formats:
 
-The exact generated content depends on the configured generator and brand voice instructions.
+- Tweet / Social Post
+- Email
+- Flyer
+
+The available formats and the generated content depend on the current application implementation.
 
 ## 4. Technologies Used
 
 - Python
 - Flask
-- Large Language Model API
-- HTML and CSS
+- HTML
+- CSS
 - JavaScript
 - Jinja2 templates
 - JSON
@@ -69,48 +64,52 @@ paper-trail-books-marketing-copy-generator/
 ├── brand_voice.json
 ├── requirements.txt
 ├── README.md
+├── .gitignore
 ├── src/
 │   └── generator.py
 ├── templates/
 │   └── index.html
-├── tests/
-│   └── test_generator.py
-└── .gitignore
+└── tests/
+    └── test_generator.py
 ```
 
-The structure above illustrates the main project components. Additional source files, tests, and configuration files may be present in the repository.
+Additional local files may exist during development. Backup files are not required for the normal application workflow.
 
 ## 6. Prerequisites
 
-Before running the project, make sure you have:
+Before running the application, install:
 
 - Python 3.10 or a compatible version supported by the dependencies.
 - pip.
 - Git.
-- An API key for the configured LLM provider.
-- An active provider account with sufficient API credits, if required.
+
+Check your Python installation:
+
+```powershell
+python --version
+```
 
 ## 7. Installation
 
-### Step 1: Clone the Repository
+### Step 1: Clone the repository
 
 ```powershell
 git clone https://github.com/hafsayyyyy/paper-trail-books-marketing-copy-generator.git
 ```
 
-### Step 2: Navigate to the Project
+### Step 2: Navigate to the project folder
 
 ```powershell
 cd paper-trail-books-marketing-copy-generator
 ```
 
-### Step 3: Create a Virtual Environment
+### Step 3: Create a virtual environment
 
 ```powershell
 python -m venv .venv
 ```
 
-### Step 4: Activate the Environment
+### Step 4: Activate the virtual environment
 
 For Windows PowerShell:
 
@@ -118,44 +117,16 @@ For Windows PowerShell:
 .\.venv\Scripts\Activate.ps1
 ```
 
-### Step 5: Install Dependencies
+### Step 5: Install dependencies
 
 ```powershell
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-## 8. Environment Configuration
+## 8. Running the Application
 
-The application may require an API key to communicate with the configured LLM provider.
-
-For a Windows PowerShell session, set the required environment variable:
-
-```powershell
-$env:OPENAI_API_KEY="your_api_key_here"
-```
-
-If the application supports model configuration through `OPENAI_MODEL`, set it as follows:
-
-```powershell
-$env:OPENAI_MODEL="gpt-4o-mini"
-```
-
-Replace the example API key with your own valid key.
-
-These PowerShell environment variables apply to the current terminal session. Set them again in a new session when necessary.
-
-### Security Notes
-
-- Never publish API keys in source code or README examples.
-- Never commit `.env` files containing secrets.
-- Add local secret files to `.gitignore`.
-- Configure deployment secrets through the hosting provider's environment-variable settings.
-- Do not share API credentials in screenshots, logs, or public repositories.
-
-## 9. Running the Web Application
-
-After installing dependencies and configuring the required API credentials, start the application:
+Start the Flask application:
 
 ```powershell
 python app.py
@@ -167,49 +138,70 @@ Open the following address in your browser:
 http://127.0.0.1:5000
 ```
 
-### Using the Web Interface
+Keep the terminal open while using the application.
+
+## 9. Using the Web Interface
 
 1. Enter the book title.
 2. Enter the author's name.
 3. Select the book genre.
-4. Enter the book description.
-5. Specify the target audience.
-6. Select the marketing content type.
-7. Click **Generate Marketing Copy**.
-8. Review the generated content or any displayed error message.
-9. Use the copy or print options when results are available.
+4. Enter the target audience.
+5. Provide a description of the book.
+6. Select a marketing format.
+7. Generate the marketing copy.
+8. Review and edit the generated content if needed.
+9. Complete all required review checklist items.
+10. Click **Save Copy** to save the copy and checklist.
 
-The application validates required fields before attempting generation.
+The application validates required fields and provides feedback when generation or saving fails.
 
-Actual content generation depends on the configured LLM API, credentials, account credits, and provider availability.
+### Review Checklist
 
-## 10. API Documentation
+Before saving, users are asked to review the following:
 
-### Endpoint
+- The tone matches the brand voice.
+- The copy has an appropriate length.
+- Brand keywords are included.
 
-`POST /generate`
+The save workflow requires all checklist items to be completed.
 
-The endpoint accepts a JSON request and returns generated marketing content or an error response.
+## 10. Saving Marketing Copy
 
-### Required Fields
+The application provides a save endpoint:
 
-| Field | Type | Description |
-|---|---|---|
-| `title` | String | Book title |
-| `author` | String | Author name |
-| `genre` | String | Book genre |
-| `description` | String | Description of the book |
-| `audience` | String | Intended target audience |
+`POST /save`
 
-### Optional Field
+The save workflow accepts marketing copy, book details, the selected format, and the review checklist.
 
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `copy_type` | String | `all` | Selects the marketing content type |
+When the request is valid, the application stores the saved record in:
 
-Supported `copy_type` values are `all`, `description`, `headlines`, `social`, and `keywords`.
+```text
+saved_copies.json
+```
 
-### Example JSON Request
+The saved record includes information such as:
+
+- Save timestamp.
+- Book details.
+- Selected marketing format.
+- Marketing copy.
+- Review checklist.
+
+The JSON file is local application data and is excluded from Git version control through `.gitignore`.
+
+**Note:** Local JSON storage is suitable for a simple development workflow. It is not a substitute for a production database, and files stored on temporary hosting instances may not persist across restarts or redeployments.
+
+## 11. API Documentation
+
+### Generate Marketing Copy
+
+**Endpoint:** `POST /generate`
+
+**Content-Type:** `application/json`
+
+The endpoint accepts book information and a marketing content type. The application validates the input and returns generated copy or an error response.
+
+### Example Request
 
 ```json
 {
@@ -218,13 +210,15 @@ Supported `copy_type` values are `all`, `description`, `headlines`, `social`, an
   "genre": "Mystery",
   "description": "A mystery novel about secrets hidden in an old garden.",
   "audience": "Young adults",
-  "copy_type": "headlines"
+  "copy_type": "all"
 }
 ```
 
+The accepted fields and marketing type values depend on the current implementation of `app.py` and `src/generator.py`.
+
 ### Example PowerShell Request
 
-Make sure the Flask application is running before sending this request.
+Make sure the Flask application is running first.
 
 ```powershell
 $body = @{
@@ -233,7 +227,7 @@ $body = @{
     genre = "Mystery"
     description = "A mystery novel about secrets hidden in an old garden."
     audience = "Young adults"
-    copy_type = "headlines"
+    copy_type = "all"
 } | ConvertTo-Json
 
 Invoke-RestMethod `
@@ -243,121 +237,98 @@ Invoke-RestMethod `
     -Body $body
 ```
 
-### Successful Response Structure
+### Example Response
 
-A successful response has the following general structure:
+The following is an illustrative example. Actual response fields and content depend on the application's implementation.
 
 ```json
 {
   "success": true,
-  "copy_type": "headlines",
-  "marketing_copy": "Generated marketing content appears here."
+  "copy": "Example marketing copy for the book."
 }
 ```
 
-The example content is illustrative and is not a guaranteed generation result.
+### Error Handling
 
-### Error Responses
+The application validates requests and returns error responses for invalid input or generation failures. The exact HTTP status codes and response fields should match the implementation in `app.py`.
 
-The API validates the request and handles common failures.
+## 12. Brand Voice Configuration
 
-| HTTP Status | Meaning |
-|---|---|
-| `200` | Request processed successfully |
-| `400` | Invalid JSON object or missing/invalid required fields |
-| `415` | Request is not sent as JSON |
-| `500` | Configuration or unexpected internal error |
-| `502` | Marketing content generation failed |
-| `503` | Required API credentials are missing |
+The project includes a `brand_voice.json` file for configuring brand voice guidelines.
 
-The exact response message depends on the error encountered.
+These guidelines may define the preferred tone, style, personality, and writing rules for marketing content.
 
-## 11. Brand Voice Configuration
-
-The project includes a `brand_voice.json` configuration file.
-
-This file is intended to define writing guidelines that help keep generated marketing content consistent with the desired brand identity.
-
-Depending on the current generator implementation, the configuration may specify:
-
-- Preferred tone.
-- Writing style.
-- Brand personality.
-- Language preferences.
-- Content guidelines.
-
-Update the configuration carefully to match the project's requirements. The effect of each setting depends on how the generator reads and applies it.
-
-## 12. Input Validation and Error Handling
-
-The application checks that required book fields are present and contain valid text before generation.
-
-The JSON API also checks:
-
-- Whether the request uses the expected content type.
-- Whether the request body is a valid JSON object.
-- Whether required fields contain non-empty strings.
-- Whether `copy_type` is supported.
-
-The application handles common generation problems, including:
-
-- Missing API credentials.
-- Invalid configuration.
-- External API failures.
-- Insufficient provider credits or usage limits.
-- Unexpected generation errors.
-
-Error messages are returned without intentionally exposing secret credentials.
+Update the file carefully and test the application after making changes. The effect of each setting depends on how `src/generator.py` reads and applies the configuration.
 
 ## 13. Testing
 
-The project uses pytest for automated testing.
+The project uses pytest for automated tests.
 
-Run the tests from the project directory:
+Run the test suite:
 
 ```powershell
 python -m pytest -q
 ```
 
-To run the tests with more detailed output:
+For detailed test output:
 
 ```powershell
 python -m pytest -v
 ```
 
-Tests should be run after code changes to verify supported functionality and prevent regressions.
+Review the results after making code changes. Report only the test results that were actually observed.
 
-Record only the test results that were actually observed. Passing automated tests do not necessarily confirm that the external LLM service is available or that a live API request will succeed.
+## 14. Deployment
 
-## 14. Troubleshooting
+The project can be deployed to a compatible Python hosting service, such as Render.
+
+A typical deployment workflow is:
+
+1. Push the code to GitHub.
+2. Create or select a compatible web service.
+3. Configure the repository and build command.
+4. Configure the appropriate start command.
+5. Add any required environment variables.
+6. Deploy the application.
+7. Test the live web interface and API.
+8. Review application logs if errors occur.
+
+The local development command is:
+
+```text
+python app.py
+```
+
+For production, follow the hosting provider's instructions for the start command, port configuration, and production WSGI server.
+
+A successful GitHub push does not automatically confirm that the latest changes have been deployed. Verify the deployment in the hosting dashboard.
+
+## 15. Troubleshooting
 
 ### Application Does Not Start
 
-Confirm that the virtual environment is activated and the dependencies are installed.
+Activate the virtual environment and install the dependencies:
 
 ```powershell
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python app.py
 ```
 
-### API Key Is Missing
+### Marketing Copy Does Not Generate
 
-Set the required environment variable in the terminal before starting the application.
+- Check that all required book fields are filled in.
+- Check the terminal for error messages.
+- Verify that `brand_voice.json` is present and valid.
+- Review the current generator implementation and its configuration requirements.
 
-```powershell
-$env:OPENAI_API_KEY="your_api_key_here"
-python app.py
-```
+### Saving Fails
 
-### Generation Fails
-
-Check the following:
-
-- The API key is valid.
-- The configured model is available to the account.
-- The account has sufficient API credits.
-- The internet connection is working.
-- The provider has not reported an outage or usage limit.
+- Confirm that marketing copy has been generated.
+- Complete all required review checklist items.
+- Check the response message in the web interface.
+- Check the Flask terminal for errors.
+- Ensure the application can write to its local project directory.
 
 ### Tests Fail
 
@@ -367,72 +338,44 @@ Run:
 python -m pytest -v
 ```
 
-Review the error output and check whether a dependency, configuration setting, or source-code change caused the failure.
+Review the failure details and check the relevant source code and dependencies.
 
-## 15. Deployment
+## 16. Security and Data Considerations
 
-The application can be prepared for deployment to a compatible Python hosting service.
+- Do not commit API keys, passwords, or other secrets.
+- Keep `.env` files out of Git version control.
+- Do not commit local generated data such as `saved_copies.json`.
+- Validate incoming API requests.
+- Avoid exposing sensitive internal error details.
+- Review generated content before publishing it commercially.
+- Use persistent storage or a database if saved records must survive production redeployments.
 
-A typical deployment process includes:
+## 17. Limitations
 
-1. Push the project to a public GitHub repository.
-2. Select a hosting provider that supports Python and Flask.
-3. Configure the build and start commands according to the provider's instructions.
-4. Add required environment variables through the provider's dashboard.
-5. Deploy the application.
-6. Open the deployed URL and test the web interface.
-7. Test the API endpoint and review application logs.
-
-A typical start command for a basic Flask setup is:
-
-```text
-python app.py
-```
-
-However, production hosting may require a production WSGI server and a hosting-specific start command. The application must also listen on the port supplied by the hosting environment.
-
-**Deployment status:** Deployment has not been confirmed by this README. Add a live deployment URL only after the application has been successfully deployed and tested.
-
-## 16. Limitations
-
-- Generation depends on an external LLM provider.
-- A valid API key may be required.
-- API usage limits and insufficient credits may prevent generation.
-- Generated content may contain inaccurate or unsuitable claims.
-- Output quality depends on the supplied book details and prompt instructions.
+- Marketing copy quality depends on the configured generation method and supplied book details.
 - Generated content should be reviewed before publication.
-- A successful local test suite does not guarantee production readiness.
-- Hosting availability, costs, and environment requirements depend on the selected provider.
+- Local JSON storage is not designed for concurrent multi-user production workloads.
+- Deployment configuration may require adjustments for the selected hosting provider.
+- Passing automated tests does not guarantee that every live deployment scenario works correctly.
 
-## 17. Future Improvements
+## 18. Future Improvements
 
 Potential improvements include:
 
-- Additional marketing copy formats.
+- Additional marketing formats.
 - More brand voice presets.
-- Improved validation and feedback.
-- More automated tests.
+- Export options for saved content.
+- Persistent database storage.
+- Improved accessibility and responsive design.
+- Additional automated tests.
 - Production-ready deployment configuration.
-- Rate limiting and abuse protection.
-- Better accessibility and responsive design.
-- Saving and exporting generated content.
-- Improved monitoring and error reporting.
-
-## 18. Security Considerations
-
-- Keep API keys outside the source code.
-- Exclude `.env`, virtual environments, and cache files from version control.
-- Validate incoming requests.
-- Avoid exposing sensitive exception details to users.
-- Configure secrets securely in deployment environments.
-- Use a production-ready server for public deployments.
-- Review generated content before using it commercially.
+- Improved logging and monitoring.
 
 ## 19. Conclusion
 
-The Paper Trail Books Marketing Copy Generator demonstrates how Python, Flask, and an LLM API can be combined to automate book marketing content generation.
+The Paper Trail Books Marketing Copy Generator demonstrates a Flask-based workflow for creating, reviewing, and saving promotional content for books.
 
-The project provides a web interface, a JSON API, configurable brand voice instructions, input validation, error handling, and automated testing. It offers a foundation for further improvements in content generation, usability, testing, and deployment.
+The project combines a web interface, book information forms, brand voice configuration, input validation, a JSON API, a review checklist, local saving, and automated tests.
 
 ## 20. Repository
 
