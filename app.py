@@ -48,7 +48,7 @@ def format_copy(copy_text, selected_format, book):
             "FIND YOUR NEXT GREAT READ\nPaper Trail Books"
         )
     # Tweet format: return one concise social post, not a list of posts.
-    first_post = copy_text.split("\n\n")[2] if "\n\n" in copy_text else copy_text
+    parts = copy_text.split("\n\n")\n    first_post = parts[1] if len(parts) > 1 else copy_text
     first_post = first_post.strip()
     if first_post.startswith("1. "):
         first_post = first_post[3:]
