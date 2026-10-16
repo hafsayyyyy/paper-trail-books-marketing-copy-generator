@@ -1,451 +1,207 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Paper Trail Books | Marketing Copy Generator</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <style>
-        body {
-            background: #f4f7fb;
-            color: #12355b;
-        }
-
-        .navbar {
-            background: #0b2545;
-        }
-
-        .main-card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 4px 18px rgba(18, 53, 91, 0.09);
-        }
-
-        .btn-primary {
-            background: #12355b;
-            border-color: #12355b;
-        }
-
-        .btn-primary:hover {
-            background: #0b2545;
-            border-color: #0b2545;
-        }
-
-        textarea {
-            min-height: 180px;
-        }
-
-        .form-label {
-            font-weight: 600;
-        }
-
-        #message,
-        #saveMessage {
-            overflow-wrap: anywhere;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paper Trail Books | Marketing Copy Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root { --navy:#0b2545; --blue:#12355b; --pale:#f4f7fb; }
+    body { background:var(--pale); color:var(--blue); }
+    .navbar { background:var(--navy); }
+    .main-card { border:0; border-radius:16px; box-shadow:0 4px 18px #12355b14; }
+    .btn-primary { background:var(--blue); border-color:var(--blue); }
+    .btn-primary:hover { background:var(--navy); border-color:var(--navy); }
+    .form-label { font-weight:600; }
+    #generatedCopy { min-height:220px; white-space:pre-wrap; }
+    .status { overflow-wrap:anywhere; }
+  </style>
 </head>
-
 <body>
 <nav class="navbar navbar-dark">
-    <div class="container">
-        <span class="navbar-brand fw-bold">Paper Trail Books</span>
-    </div>
+  <div class="container"><span class="navbar-brand fw-bold">Paper Trail Books</span></div>
 </nav>
+<main class="container py-4 py-lg-5">
+  <header class="text-center mb-4">
+    <h1 class="fw-bold">Book Marketing Copy Generator</h1>
+    <p class="text-secondary mb-0">Create, review, and save reader-friendly marketing copy.</p>
+  </header>
 
-<main class="container py-5">
+  <section class="card main-card p-3 p-md-4 mb-4">
+    <h2 class="h4 mb-3">1. Book Details</h2>
+    <form id="bookForm">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="title">Book title *</label>
+          <input class="form-control" id="title" name="title" maxlength="200" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="author">Author *</label>
+          <input class="form-control" id="author" name="author" maxlength="200" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="genre">Genre *</label>
+          <select class="form-select" id="genre" name="genre" required>
+            <option value="">Choose genre</option>
+            <option>Fiction</option><option>Fantasy</option><option>Mystery</option>
+            <option>Romance</option><option>Science Fiction</option><option>Thriller</option>
+            <option>Biography</option><option>Self-Help</option><option>Non-Fiction</option><option>Other</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="audience">Target audience *</label>
+          <input class="form-control" id="audience" name="audience" maxlength="300" placeholder="e.g. Young adults" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="description">Book description *</label>
+          <textarea class="form-control" id="description" name="description" rows="4" maxlength="5000" placeholder="Describe the book using accurate details." required></textarea>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="copy_format">Copy format *</label>
+          <select class="form-select" id="copy_format" name="copy_format" required>
+            <option value="tweet">Tweet</option><option value="email">Email</option><option value="flyer">Flyer</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-primary px-4" id="generateBtn" type="submit">Generate Copy</button>
+        </div>
+      </div>
+    </form>
+    <div id="message" class="status mt-3" role="status" aria-live="polite"></div>
+  </section>
 
-    <div class="text-center mb-4">
-        <h1 class="fw-bold">Book Marketing Copy Generator</h1>
-        <p class="text-secondary">
-            Generate, review, and save marketing copy for your books.
-        </p>
+  <section class="card main-card p-3 p-md-4 mb-4">
+    <h2 class="h4 mb-3">2. Generated Copy</h2>
+    <label class="form-label" for="generatedCopy">Review and edit your copy</label>
+    <textarea class="form-control" id="generatedCopy" maxlength="15000" placeholder="Generated copy will appear here..." aria-describedby="copyHelp"></textarea>
+    <div id="copyHelp" class="form-text">Generation happens without reloading the page. You may edit the copy before saving.</div>
+  </section>
+
+  <section class="card main-card p-3 p-md-4">
+    <h2 class="h4 mb-2">3. Review Checklist</h2>
+    <p class="text-secondary">Read the copy and tick each item after checking it.</p>
+    <div class="form-check mb-3">
+      <input class="form-check-input review-check" type="checkbox" id="tone">
+      <label class="form-check-label" for="tone">Tone matches the Paper Trail Books brand voice.</label>
     </div>
-
-    <!-- Book details -->
-    <section class="card main-card p-4 mb-4">
-        <h2 class="h4 mb-3">1. Book Details</h2>
-
-        <form id="bookForm">
-            <div class="row g-3">
-
-                <div class="col-md-6">
-                    <label class="form-label" for="title">
-                        Book Title *
-                    </label>
-                    <input
-                        class="form-control"
-                        id="title"
-                        name="title"
-                        required
-                        maxlength="200"
-                    >
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label" for="author">
-                        Author Name *
-                    </label>
-                    <input
-                        class="form-control"
-                        id="author"
-                        name="author"
-                        required
-                        maxlength="200"
-                    >
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label" for="genre">Genre *</label>
-                    <select
-                        class="form-select"
-                        id="genre"
-                        name="genre"
-                        required
-                    >
-                        <option value="">Choose a genre</option>
-                        <option value="Fiction">Fiction</option>
-                        <option value="Fantasy">Fantasy</option>
-                        <option value="Mystery">Mystery</option>
-                        <option value="Romance">Romance</option>
-                        <option value="Science Fiction">Science Fiction</option>
-                        <option value="Thriller">Thriller</option>
-                        <option value="Biography">Biography</option>
-                        <option value="Self-Help">Self-Help</option>
-                        <option value="Non-Fiction">Non-Fiction</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label" for="audience">
-                        Target Audience *
-                    </label>
-                    <input
-                        class="form-control"
-                        id="audience"
-                        name="audience"
-                        required
-                        maxlength="300"
-                        placeholder="e.g. Young adults"
-                    >
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label" for="description">
-                        Book Description *
-                    </label>
-                    <textarea
-                        class="form-control"
-                        id="description"
-                        name="description"
-                        rows="4"
-                        required
-                        maxlength="5000"
-                        placeholder="Describe the book without inventing details"
-                    ></textarea>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label" for="copy_format">
-                        Marketing Format *
-                    </label>
-                    <select
-                        class="form-select"
-                        id="copy_format"
-                        name="copy_format"
-                        required
-                    >
-                        <option value="tweet">Tweet / Social Post</option>
-                        <option value="email">Email</option>
-                        <option value="flyer">Flyer</option>
-                    </select>
-                </div>
-
-                <div class="col-12">
-                    <button
-                        class="btn btn-primary px-4"
-                        id="generateBtn"
-                        type="submit"
-                    >
-                        Generate Marketing Copy
-                    </button>
-                </div>
-
-            </div>
-        </form>
-
-        <div
-            id="message"
-            class="mt-3"
-            role="status"
-            aria-live="polite"
-        ></div>
-    </section>
-
-    <!-- Generated copy -->
-    <section class="card main-card p-4 mb-4">
-        <h2 class="h4 mb-3">2. Generated Copy</h2>
-
-        <label class="form-label" for="generatedCopy">
-            Review and edit your copy
-        </label>
-
-        <textarea
-            class="form-control"
-            id="generatedCopy"
-            maxlength="15000"
-            placeholder="Generated copy will appear here..."
-        ></textarea>
-
-        <p class="text-secondary small mt-2 mb-0">
-            You can edit the generated copy before saving it.
-        </p>
-    </section>
-
-    <!-- Review checklist -->
-    <section class="card main-card p-4">
-        <h2 class="h4 mb-2">3. Review Checklist</h2>
-
-        <p class="text-secondary">
-            Review your copy and check every item before saving.
-        </p>
-
-        <div class="form-check mb-3">
-            <input
-                class="form-check-input review-check"
-                type="checkbox"
-                id="tone"
-            >
-            <label class="form-check-label" for="tone">
-                Tone matches the Paper Trail Books brand voice.
-            </label>
-        </div>
-
-        <div class="form-check mb-3">
-            <input
-                class="form-check-input review-check"
-                type="checkbox"
-                id="length"
-            >
-            <label class="form-check-label" for="length">
-                Copy length is suitable for the selected format.
-            </label>
-        </div>
-
-        <div class="form-check mb-4">
-            <input
-                class="form-check-input review-check"
-                type="checkbox"
-                id="keywords"
-            >
-            <label class="form-check-label" for="keywords">
-                Brand keywords and book details have been checked.
-            </label>
-        </div>
-
-        <div>
-            <button
-                class="btn btn-success px-4"
-                id="saveBtn"
-                type="button"
-            >
-                Save Copy and Review
-            </button>
-        </div>
-
-        <div
-            id="saveMessage"
-            class="mt-3"
-            role="status"
-            aria-live="polite"
-        ></div>
-    </section>
-
+    <div class="form-check mb-3">
+      <input class="form-check-input review-check" type="checkbox" id="length">
+      <label class="form-check-label" for="length">Copy length is suitable for the selected format.</label>
+    </div>
+    <div class="form-check mb-4">
+      <input class="form-check-input review-check" type="checkbox" id="keywords">
+      <label class="form-check-label" for="keywords">Book details and brand keywords have been checked.</label>
+    </div>
+    <div><button class="btn btn-success px-4" id="saveBtn" type="button">Save Copy and Checklist</button></div>
+    <div id="saveMessage" class="status mt-3" role="status" aria-live="polite"></div>
+  </section>
 </main>
-
 <script>
-    "use strict";
+"use strict";
+const form = document.getElementById("bookForm");
+const generateBtn = document.getElementById("generateBtn");
+const generatedCopy = document.getElementById("generatedCopy");
+const message = document.getElementById("message");
+const saveBtn = document.getElementById("saveBtn");
+const saveMessage = document.getElementById("saveMessage");
+let generatedSuccessfully = false;
 
-    const form = document.getElementById("bookForm");
-    const generateBtn = document.getElementById("generateBtn");
-    const generatedCopy = document.getElementById("generatedCopy");
-    const message = document.getElementById("message");
-    const saveBtn = document.getElementById("saveBtn");
-    const saveMessage = document.getElementById("saveMessage");
+function getBookDetails() {
+  return {
+    title: document.getElementById("title").value.trim(),
+    author: document.getElementById("author").value.trim(),
+    genre: document.getElementById("genre").value.trim(),
+    audience: document.getElementById("audience").value.trim(),
+    description: document.getElementById("description").value.trim()
+  };
+}
+function getChecklist() {
+  return {
+    tone_matches_brand_voice: document.getElementById("tone").checked,
+    appropriate_length: document.getElementById("length").checked,
+    brand_keywords_included: document.getElementById("keywords").checked
+  };
+}
+function showMessage(element, type, text) {
+  element.className = "status mt-3 alert alert-" + type;
+  element.textContent = text;
+}
+function resetChecklist() {
+  document.querySelectorAll(".review-check").forEach(box => { box.checked = false; });
+}
 
-    function getBookDetails() {
-        return {
-            title: document.getElementById("title").value.trim(),
-            author: document.getElementById("author").value.trim(),
-            genre: document.getElementById("genre").value,
-            audience: document.getElementById("audience").value.trim(),
-            description: document.getElementById("description").value.trim()
-        };
-    }
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+  message.textContent = "";
+  saveMessage.textContent = "";
+  if (!form.reportValidity()) return;
 
-    function getChecklist() {
-        return {
-            tone_matches_brand_voice:
-                document.getElementById("tone").checked,
-
-            appropriate_length:
-                document.getElementById("length").checked,
-
-            brand_keywords_included:
-                document.getElementById("keywords").checked
-        };
-    }
-
-    function showMessage(element, type, text) {
-        element.className = "mt-3 text-" + type;
-        element.textContent = text;
-    }
-
-    // Generate marketing copy
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        message.textContent = "";
-        saveMessage.textContent = "";
-
-        if (!form.reportValidity()) {
-            return;
-        }
-
-        const book = getBookDetails();
-
-        const data = {
-            ...book,
-            copy_format: document.getElementById("copy_format").value
-        };
-
-        generateBtn.disabled = true;
-        generateBtn.textContent = "Generating...";
-
-        try {
-            const response = await fetch("/generate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (!response.ok || !result.success) {
-                throw new Error(
-                    result.error || "Marketing copy generation failed."
-                );
-            }
-
-            if (typeof result.copy !== "string" || !result.copy.trim()) {
-                throw new Error("The server returned empty marketing copy.");
-            }
-
-            generatedCopy.value = result.copy;
-
-            // New copy must be reviewed again.
-            document.querySelectorAll(".review-check").forEach(function (box) {
-                box.checked = false;
-            });
-
-            showMessage(
-                message,
-                "success",
-                "Copy generated successfully. Review it before saving."
-            );
-
-        } catch (error) {
-            showMessage(message, "danger", error.message);
-        } finally {
-            generateBtn.disabled = false;
-            generateBtn.textContent = "Generate Marketing Copy";
-        }
+  generateBtn.disabled = true;
+  generateBtn.textContent = "Generating...";
+  try {
+    const response = await fetch("/generate", {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
+      body: JSON.stringify({
+        ...getBookDetails(),
+        copy_format: document.getElementById("copy_format").value
+      })
     });
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.error || "Generation failed.");
+    if (typeof result.copy !== "string" || !result.copy.trim()) throw new Error("The server returned empty copy.");
+    generatedCopy.value = result.copy;
+    generatedSuccessfully = true;
+    resetChecklist();
+    showMessage(message, "success", "Copy generated. Please review it and complete the checklist.");
+  } catch (error) {
+    showMessage(message, "danger", error.message || "Could not connect to the server.");
+  } finally {
+    generateBtn.disabled = false;
+    generateBtn.textContent = "Generate Copy";
+  }
+});
 
-    // Save copy and review checklist
-    saveBtn.addEventListener("click", async function () {
-        saveMessage.textContent = "";
+generatedCopy.addEventListener("input", () => { generatedSuccessfully = false; });
 
-        if (!form.reportValidity()) {
-            showMessage(
-                saveMessage,
-                "danger",
-                "Please complete all required book details first."
-            );
-            return;
-        }
-
-        if (!generatedCopy.value.trim()) {
-            showMessage(
-                saveMessage,
-                "danger",
-                "Generate or enter marketing copy before saving."
-            );
-            return;
-        }
-
-        const checklist = getChecklist();
-
-        if (!Object.values(checklist).every(Boolean)) {
-            showMessage(
-                saveMessage,
-                "danger",
-                "Complete all three review checks before saving."
-            );
-            return;
-        }
-
-        const book = getBookDetails();
-        const format = document.getElementById("copy_format").value;
-
-        saveBtn.disabled = true;
-        saveBtn.textContent = "Saving...";
-
-        try {
-            const response = await fetch("/save", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    copy: generatedCopy.value.trim(),
-                    checklist: checklist,
-                    book: book,
-                    format: format
-                })
-            });
-
-            const result = await response.json();
-
-            if (!response.ok || !result.success) {
-                throw new Error(
-                    result.error || "Unable to save marketing copy."
-                );
-            }
-
-            showMessage(
-                saveMessage,
-                "success",
-                result.message || "Marketing copy saved successfully."
-            );
-
-        } catch (error) {
-            showMessage(saveMessage, "danger", error.message);
-        } finally {
-            saveBtn.disabled = false;
-            saveBtn.textContent = "Save Copy and Review";
-        }
+saveBtn.addEventListener("click", async () => {
+  saveMessage.textContent = "";
+  if (!form.reportValidity()) {
+    showMessage(saveMessage, "warning", "Please complete all required book details first.");
+    return;
+  }
+  if (!generatedCopy.value.trim()) {
+    showMessage(saveMessage, "warning", "Generate or enter copy before saving.");
+    return;
+  }
+  const checklist = getChecklist();
+  if (!Object.values(checklist).every(Boolean)) {
+    showMessage(saveMessage, "warning", "Tick all three checklist items before saving.");
+    return;
+  }
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving...";
+  try {
+    const response = await fetch("/save", {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
+      body: JSON.stringify({
+        copy: generatedCopy.value.trim(),
+        checklist,
+        book: getBookDetails(),
+        format: document.getElementById("copy_format").value
+      })
     });
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.error || "Saving failed.");
+    showMessage(saveMessage, "success", result.message || "Copy saved successfully.");
+  } catch (error) {
+    showMessage(saveMessage, "danger", error.message || "Could not connect to the server.");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save Copy and Checklist";
+  }
+});
 </script>
-
 </body>
 </html>
