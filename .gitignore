@@ -1,8 +1,12 @@
-
+@'
 .venv/
 __pycache__/
 *.pyc
 .env
 .pytest_cache/
-
 saved_copies.json
+*.db
+app_debug_backup.py
+app_task1_backup.py
+templates/index_task1_backup.html
+'@ | Set-Content .gitignore

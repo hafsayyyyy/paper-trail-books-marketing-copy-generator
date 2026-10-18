@@ -1,17 +1,15 @@
 
-import json
 import os
-from datetime import datetime, timezone
-from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 from werkzeug.exceptions import HTTPException
 
+from models import init_db, insert_copy, fetch_history
 from src.generator import generate_marketing_copy
 
 app = Flask(__name__)
 
-SAVE_FILE = Path(__file__).resolve().parent / "saved_copies.json"
+init_db()
 
 REQUIRED_FIELDS = [
     "title",
@@ -53,7 +51,7 @@ def format_copy(copy_text, selected_format, book):
     if selected_format == "email":
         return (
             f"Subject: Discover {book['title']} by {book['author']}\n\n"
-            f"Hello, book lover!\n\n"
+            "Hello, book lover!\n\n"
             f"{copy_text}\n\n"
             "Explore your next read with Paper Trail Books.\n\n"
             "Happy reading,\n"
@@ -71,10 +69,9 @@ def format_copy(copy_text, selected_format, book):
             "Paper Trail Books"
         )
 
-    # Tweet format: return one social media post.
+    # Return one post rather than the entire social-copy response.
     parts = copy_text.split("\n\n")
     first_post = parts[1] if len(parts) > 1 else copy_text
-
     first_post = first_post.strip()
 
     if first_post.startswith("1. "):
@@ -91,7 +88,7 @@ def index():
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    """Generate marketing copy from the submitted book details."""
+    """Generate marketing copy for a book."""
 
     if not request.is_json:
         return jsonify(
@@ -172,7 +169,7 @@ def generate():
 
 @app.route("/save", methods=["POST"])
 def save_copy():
-    """Validate and save generated copy and its review checklist."""
+    """Validate and save generated copy and checklist to SQLite."""
 
     if not request.is_json:
         return jsonify(
@@ -227,7 +224,6 @@ def save_copy():
         ), 400
 
     record = {
-        "saved_at": datetime.now(timezone.utc).isoformat(),
         "book": {
             key: book[key].strip()
             for key in REQUIRED_FIELDS
@@ -241,40 +237,31 @@ def save_copy():
     }
 
     try:
-        if SAVE_FILE.exists():
-            with SAVE_FILE.open("r", encoding="utf-8") as file:
-                records = json.load(file)
-
-            if not isinstance(records, list):
-                return jsonify(
-                    success=False,
-                    error="Saved data file is invalid.",
-                ), 500
-        else:
-            records = []
-
-        records.append(record)
-
-        with SAVE_FILE.open("w", encoding="utf-8") as file:
-            json.dump(
-                records,
-                file,
-                indent=2,
-                ensure_ascii=False,
-            )
+        insert_copy(record)
 
         return jsonify(
             success=True,
             message="Copy and checklist saved successfully.",
         ), 200
 
-    except (OSError, json.JSONDecodeError):
-        app.logger.exception("Could not save copy.")
+    except Exception:
+        app.logger.exception("Could not save copy to SQLite.")
 
         return jsonify(
             success=False,
             error="Unable to save copy on the server.",
         ), 500
+
+
+@app.route("/history", methods=["GET"])
+def history():
+    """Display previously saved marketing copies."""
+    try:
+        records = fetch_history()
+        return render_template("history.html", records=records)
+    except Exception:
+        app.logger.exception("Could not load saved history.")
+        return "Unable to load saved history.", 500
 
 
 @app.errorhandler(HTTPException)
@@ -307,7 +294,7 @@ def handle_unexpected_error(error):
 
 if __name__ == "__main__":
     app.run(
-        host="127.0.0.1",
+        host="0.0.0.0",
         port=int(os.environ.get("PORT", 5000)),
-        debug=True,
+        debug=os.environ.get("FLASK_DEBUG") == "1",
     )
