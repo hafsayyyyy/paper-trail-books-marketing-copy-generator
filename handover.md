@@ -8,7 +8,7 @@ Paper Trail Books Marketing Copy Generator
 https://github.com/hafsayyyyy/paper-trail-books-marketing-copy-generator
 
 ## Live Website
-https://paper-trail-books-marketing-copy-generator.onrender.com/
+https://paper-trail-books-marketing-copy.onrender.com/
 
 ## Technologies
 - Python
@@ -45,3 +45,4 @@ Configure API keys and secrets privately through environment variables. Never ad
 1. Verify the Render deployment after pushing changes.
 2. Test copy generation, saving, and the history page.
 3. Consider persistent storage because SQLite data may not survive restarts on an ephemeral hosting filesystem.
+

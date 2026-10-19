@@ -1,4 +1,4 @@
-﻿@'
+@'
 # Paper Trail Books Marketing Copy Generator
 
 A Flask web application that generates marketing copy for books, lets users review the results, and saves approved copies in an SQLite database.
