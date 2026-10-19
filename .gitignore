@@ -10,3 +10,4 @@ app_debug_backup.py
 app_task1_backup.py
 templates/index_task1_backup.html
 '@ | Set-Content .gitignore
+app_task2_backup.py
